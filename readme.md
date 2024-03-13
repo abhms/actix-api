@@ -27,7 +27,7 @@ This project is an Actix web server implemented in Rust. It utilizes Actix-Web f
 1. Clone the repository:
 
    ```
-   git clone https://github.com/your_username/actix-server.git
+   git clone https://github.com/abhms/actix-api.git
    cd actix-server
 
 2. Install dependencies using Cargo:
