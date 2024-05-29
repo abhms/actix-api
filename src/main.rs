@@ -50,6 +50,7 @@ use repository::mongodb_repo::MongoRepo;
 async fn main() -> std::io::Result<()> {
     let db = MongoRepo::init().await;
     let db_data = Data::new(db);
+    println!("hello bro");
     HttpServer::new(move || {
         App::new()
             .app_data(db_data.clone())

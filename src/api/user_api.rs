@@ -9,6 +9,8 @@ pub async fn create_user(db: Data<MongoRepo>, new_user: Json<User>) -> HttpRespo
     let data = User {
         id: None,
         name: new_user.name.to_owned(),
+        email: new_user.email.to_owned(),
+        password: new_user.password.to_owned(),
         location: new_user.location.to_owned(),
         title: new_user.title.to_owned(),
     };
@@ -45,6 +47,8 @@ pub async fn update_user(
     let data = User {
         id: Some(ObjectId::parse_str(&id).unwrap()),
         name: new_user.name.to_owned(),
+        email: new_user.email.to_owned(),
+        password: new_user.password.to_owned(),
         location: new_user.location.to_owned(),
         title: new_user.title.to_owned(),
     };
