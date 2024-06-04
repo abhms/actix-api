@@ -85,4 +85,16 @@ impl MongoRepo {
             .expect("Error deleting user");
         Ok(user_detail)
     }
+    pub async fn find_user_by_email(&self, email: &String) -> Result<User, Error> {
+        
+        let email_address = email.clone();  // Fixed variable naming
+        let filter = doc! {"email": email_address};
+        let detail = self
+            .col
+            .find_one(filter, None)
+            .await
+            .ok()
+            .expect("Error getting user's detail");
+        Ok(detail.unwrap())
+    }
 }

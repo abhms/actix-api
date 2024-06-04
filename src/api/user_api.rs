@@ -3,7 +3,10 @@ use actix_web::{
     delete, get, post, put, web::{Data, Json, Path}, HttpResponse
 };
 use mongodb::bson::oid::ObjectId;
-
+use hmac::{Hmac, Mac};
+use jwt::SignWithKey;
+use sha2::Sha256;
+use std::collections::BTreeMap;
 #[post("/user")]
 pub async fn create_user(db: Data<MongoRepo>, new_user: Json<User>) -> HttpResponse {
     let data = User {
@@ -14,7 +17,26 @@ pub async fn create_user(db: Data<MongoRepo>, new_user: Json<User>) -> HttpRespo
         location: new_user.location.to_owned(),
         title: new_user.title.to_owned(),
     };
+    // let existing_user = db.find_user_by_email(&new_user.email).await?;
+    let user_detailss = db.find_user_by_email(&new_user.email).await;
+    if user_detailss.is_ok(){
+        println!("User details: {:?}", user_detailss);
+        return HttpResponse::Ok().json("The user is already excited!");
+    }
+    // match user_detailss {
+    //     Ok(user) => HttpResponse::Ok().json("Email address already exists ");
+    //     // Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
+    // }
+    // if user_detailss {
+    //     return HttpResponse::BadRequest().json("Email address already exists");
+    // }
     let user_detail = db.create_user(data).await;
+    let key: Hmac<Sha256> = Hmac::new_from_slice(b"secretKey").unwrap();
+    let mut claims = BTreeMap::new();
+    claims.insert("sub", "someone");
+    let token_str = claims.sign_with_key(&key).unwrap();
+    assert_eq!(token_str, "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzb21lb25lIn0.5wwE1sBrs-vftww_BGIuTVDeHtc1Jsjo-fiHhDwR8m0");
+     println!("{} {}", token_str,"hello bro");
     match user_detail {
         Ok(user) => HttpResponse::Ok().json(user),
         Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
